@@ -4,10 +4,28 @@
 set_include_path('/var/www');
 include('inc/settings.inc.php');
 
+// ############################### Get the data
+
+$url = "http://localhost:1234/gominer/f_status";
+$json = file_get_contents($url);
+$json = json_decode($json);
+
+$hashrate = $json->status->devs[0]->hashrate[0] / 1000;
+$hashrate = time() . ':' . round($hashrate,2);
+$algo = $json->status->devs[0]->algo;
+
+$update = array(
+        $hashrate
+);
+
+// ###############################
+
 $metric  = 'hashrate';
-$RRDFILE = $metric . '.rrd';
+$RRDFILE = $algo . '-' . $metric . '.rrd';
 $RRDPATH = '/opt/scripta/var/rrd/';
 $RRD     = $RRDPATH . $RRDFILE;
+
+file_put_contents($RRDPATH.'algo', $algo);
 
 
 if (!file_exists($RRD)) {
@@ -25,23 +43,8 @@ if (!file_exists($RRD)) {
         // echo rrd_error();
 }
 
-// ############################### Get the data
 
-$url = "http://localhost:1234/gominer/f_status";
-$json = file_get_contents($url);
-$json = json_decode($json);
-
-$hashrate = $json->status->devs[0]->hashrate[0] / 1000;
-$hashrate = time() . ':' . round($hashrate,2);
-echo $hashrate;
-$update = array(
-        $hashrate
-);
-
-// ###############################
 
 $ret = rrd_update($RRD, $update);
-
-//$hashrate;
 
 ?>
