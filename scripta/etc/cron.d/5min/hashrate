@@ -1,0 +1,47 @@
+#!/usr/bin/php
+<?php
+
+set_include_path('/var/www');
+include('inc/settings.inc.php');
+
+$metric  = 'hashrate';
+$RRDFILE = $metric . '.rrd';
+$RRDPATH = '/opt/scripta/var/rrd/';
+$RRD     = $RRDPATH . $RRDFILE;
+
+
+if (!file_exists($RRD)) {
+
+        $options = array(
+                "--step", "300",
+                "--start", "-12 months",
+                "DS:" . $metric . ":GAUGE:600:0:U",
+                "RRA:AVERAGE:0.5:1:288",
+                "RRA:AVERAGE:0.5:12:168",
+                "RRA:AVERAGE:0.5:228:365"
+        );
+
+        rrd_create($RRD, $options);
+        // echo rrd_error();
+}
+
+// ############################### Get the data
+
+$url = "http://localhost:1234/gominer/f_status";
+$json = file_get_contents($url);
+$json = json_decode($json);
+
+$hashrate = $json->status->devs[0]->hashrate[0] / 1000;
+$hashrate = time() . ':' . round($hashrate,2);
+echo $hashrate;
+$update = array(
+        $hashrate
+);
+
+// ###############################
+
+$ret = rrd_update($RRD, $update);
+
+//$hashrate;
+
+?>

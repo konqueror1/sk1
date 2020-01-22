@@ -1,0 +1,30 @@
+[
+    {
+        "key": "driver",
+        "value": "thyroid"
+    },
+    {
+        "key": "path",
+        "value": "/dev/ttyAMA0"
+    },
+    {
+        "key": "muxnums",
+        "value": 1
+    },
+    {
+        "key": "polldelay",
+        "value": "100"
+    },
+    {
+        "key": "noncetimeout",
+        "value": "1200"
+    },
+    {
+        "key": "debug",
+        "value": "info"
+    },
+    {
+        "key": "autoprogrambit",
+        "value": "false"
+    }
+]

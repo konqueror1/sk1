@@ -1,0 +1,35 @@
+{
+    "driver": "thyroid",
+    "path": "/dev/ttyAMA0",
+    "muxnums": 1,
+    "polldelay": "100",
+    "noncetimeout": "1200",
+    "debug": "info",
+    "autoprogrambit": "false",
+    "pools": [
+        {
+            "url": "stratum+tcp://skunk.mining-dutch.nl:9996",
+            "algo": "skunk",
+            "user": "konqueror.worker1",
+            "pass": "x",
+            "priority": "50",
+            "active": "true"
+        },
+        {
+            "url": "stratum+tcp://stratum.veopool.pw:8086",
+            "algo": "veo",
+            "user": "BJu4+hTL0dETOTWd1ErWMHjhkuncoxyiVOtsMY/+frhSyGi4WiAWhs79/svxdcPwQi6RgqyIEvGrEqR8DgWAcEg=",
+            "pass": "x",
+            "priority": "100",
+            "active": false
+        },
+        {
+            "url": "stratum+tcp://ckb.f2pool.com:4300",
+            "algo": "ckb",
+            "user": "konqueror.f1",
+            "pass": "x",
+            "priority": "1000",
+            "active": false
+        }
+    ]
+}
