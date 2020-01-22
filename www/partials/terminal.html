@@ -1,0 +1,21 @@
+<!-- Begin page content -->
+<div class="container-fluid">
+   <div id="insertionPoint">
+        <div id="shellinaboxdiv" style="height: 600px;">
+          <iframe id="shellinaboxframe" src=""></iframe>
+        </div>
+
+   </div>
+</div>
+
+<script>
+   var url = "http://"+window.location.hostname+":4200";
+   var iframe  = document.getElementById("shellinaboxframe");
+   iframe.src = url;
+   window.addEventListener("message", function(message) {
+       // Allow messages only from shellinabox
+       if (message.origin !== url) {
+           return;
+       }
+   }, false);
+</script>
