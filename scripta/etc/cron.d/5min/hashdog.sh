@@ -2,10 +2,17 @@
 
 RRDDIR="/opt/scripta/var/rrd/";
 RRDTOOL="/usr/bin/rrdtool";
-URL="http://localhost:1234/gominer/f_status";
 JQ="/usr/bin/jq";
-CURL="/usr/bin/curl -s";
 BC="/usr/bin/bc";
+
+#1st check if uptime is greater than 60 seconds.
+if [[ $(cut -d '.' -f 1 </proc/uptime) -lt 60 ]]; then
+    echo Too early to start; exit 0;
+fi
+
+while [ "$(/bin/pidof openocd)" != "" ]; do
+    sleep 2;
+done
 
 #Check if miner is running. If not - start it
 MINERPID=`/bin/pidof gominer`;
@@ -15,9 +22,14 @@ if [ "$MINERPID" == "" ]; then
 fi
 
 UPTIME=`ps -o etimes= -p \`pgrep -fo gominer\` | tr -d [:space:]`;
-HASHRATE1=`echo \`$CURL $URL | $JQ '.status.devs[0].hashrate[0]'\` / 1000 | $BC`;
-HASHRATE5=`echo \`$CURL $URL | $JQ '.status.devs[0].hashrate[1]'\` / 1000 | $BC`;
-ALGO=`$CURL $URL | $JQ -r '.status.devs[0].algo'`;
+
+exec 818<>/dev/tcp/localhost/1234;
+echo -e "GET /gominer/f_status HTTP/1.1\r\nhost: localhost\r\nConnection: close\r\n\r\n" >&818;
+JSON=`grep "{" <&818`;
+
+HASHRATE1=`echo \`echo $JSON | $JQ '.status.devs[0].hashrate[0]'\` / 1000 | $BC`;
+HASHRATE5=`echo \`echo $JSON | $JQ '.status.devs[0].hashrate[1]'\` / 1000 | $BC`;
+ALGO=`echo $JSON | $JQ -r '.status.devs[0].algo'`;
 RRD="$RRDDIR$ALGO-hashrate.rrd";
 
 #If miner runs for more than 5 minutes and hashrate is zero
