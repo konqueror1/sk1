@@ -6,17 +6,19 @@ URL="http://localhost:1234/gominer/f_status";
 JQ="/usr/bin/jq";
 CURL="/usr/bin/curl -s";
 BC="/usr/bin/bc";
-HASHRATE1=`echo \`$CURL $URL | $JQ '.status.devs[0].hashrate[0]'\` / 1000 | $BC`;
-HASHRATE5=`echo \`$CURL $URL | $JQ '.status.devs[0].hashrate[1]'\` / 1000 | $BC`;
-ALGO=`$CURL $URL | $JQ -r '.status.devs[0].algo'`;
-RRD="$RRDDIR$ALGO-hashrate.rrd";
-UPTIME=`ps -o etimes= -p \`pgrep -fo gominer\` | tr -d [:space:]`;
 
 #Check if miner is running. If not - start it
 MINERPID=`/bin/pidof gominer`;
 if [ "$MINERPID" == "" ]; then
     /opt/scripta/startup/miner-start.sh;
+    sleep 5;
 fi
+
+UPTIME=`ps -o etimes= -p \`pgrep -fo gominer\` | tr -d [:space:]`;
+HASHRATE1=`echo \`$CURL $URL | $JQ '.status.devs[0].hashrate[0]'\` / 1000 | $BC`;
+HASHRATE5=`echo \`$CURL $URL | $JQ '.status.devs[0].hashrate[1]'\` / 1000 | $BC`;
+ALGO=`$CURL $URL | $JQ -r '.status.devs[0].algo'`;
+RRD="$RRDDIR$ALGO-hashrate.rrd";
 
 #If miner runs for more than 5 minutes and hashrate is zero
 if [[ $UPTIME -gt 300 ]]; then
