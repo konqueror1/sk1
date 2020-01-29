@@ -66,5 +66,7 @@ max_framebuffers=2
 dtoverlay=enc28j60,int_pin=25,speed=12000000
 enable_uart=1
 dtoverlay=pi3-disable-bt
-
+dtoverlay=pi3-disable-wifi
 watchdog=on
+over_voltage=6
+force_turbo=1
